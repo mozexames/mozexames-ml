@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+
+set -o errexit
+set -o pipefail
+
+DC="${DC:-run}"
+
+# If we're running in CI we need to disable TTY allocation for docker compose
+# commands that enable it by default, s``uch as exec and run.
+TTY=""
+if [[ ! -t 1 ]]; then
+  TTY="-T"
+fi
+
+# -----------------------------------------------------------------------------
+# Helper functions start with _ and aren't listed in this script's help menu.
+# -----------------------------------------------------------------------------
+
+ORANGE='\033[0;33m'
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+ENDCOLOR='\033[0m'
+
+UNSUPPORTED_WITHIN_DEV_CONTAINER="${RED}This command is not supported when running within a dev container.${ENDCOLOR}"
+
+function _within_dev_container {
+  if [ -n "$REMOTE_CONTAINERS" ]; then
+    # Running within dev container on the host machine
+    return 0
+  else
+    # Running on the host machine
+    return 1
+  fi
+}
+
+function _dc {
+  if _within_dev_container; then
+    # Do nothing if running within a dev container
+    echo -e $UNSUPPORTED_WITHIN_DEV_CONTAINER
+    return 1
+  fi
+
+  docker compose "${DC}" ${TTY} "${@}"
+}
+
+# -----------------------------------------------------------------------------
+
+function build {
+  # Build the stack
+  if _within_dev_container; then
+    echo -e $UNSUPPORTED_WITHIN_DEV_CONTAINER
+    return 1
+  fi
+
+  docker compose build
+}
+
+function cmd {
+  # Run any command you want in the web container
+  if _within_dev_container; then
+    # Execute the commands directly, as we're already within the web container
+    exec "${@}"
+  else
+    _dc web "${@}"
+  fi
+}
+
+function python {
+  # Run python in the web container
+  cmd python "${@}"
+}
+
+function app {
+  # Run the main app script
+  python ./src/app.py
+}
+
+function bash {
+  # Run bash
+  if _within_dev_container; then
+    echo -e $UNSUPPORTED_WITHIN_DEV_CONTAINER
+    echo "* Hint: Instead, use the VS Code terminal that is connected to the dev container execute bash / zsh commands directly."
+    return 1
+  fi
+
+  cmd bash
+}
+
+function pip {
+  # Run pip in the web container
+  if [ "$1" == "install" ]; then
+    echo -e "* ${RED}The command \`./run pip install\` is not allowed on its own.${ENDCOLOR}"
+    echo -e "  Use ${GREEN}\`./run pip:install [NAME]\`${ENDCOLOR} instead to install your python dependencies."
+    echo "  This will automatically manage your requirements.txt and requirements-lock.txt file."
+    return 1
+  fi
+
+  cmd pip "${@}"
+}
+
+function pip:install {
+  # Install Python dependencies and write the requirements.txt file
+  cmd bin/pip-install "${@}"
+}
+
+function help {
+  printf "%s <task> [args]\n\nTasks:\n" "${0}"
+
+  compgen -A function | grep -v "^_" | cat -n
+
+  printf "\nExtended help:\n  Each task has comments for general usage\n"
+}
+
+# This idea is heavily inspired by: https://github.com/adriancooney/Taskfile
+TIMEFORMAT=$'\nTask completed in %3lR'
+time "${@:-help}"

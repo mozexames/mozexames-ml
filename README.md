@@ -17,11 +17,11 @@ For Machine Learning, this project uses the best pre-trained Portuguese Text Rec
 1. Clone the project, `cp .env.example .env` then open it on your `VS Code`.
 2. Install the `ms-vscode-remote.remote-containers` VS Code extension (if not already).
 3. Open the Command Pallete <kbd>CMD / CTRL</kbd> + <kbd>P</kbd> then search and run `Dev Container: Reopen in Container`.
-> This will start building the Dev Container using `docker-compose.yml`.
+> This will start building the `Dev Container` using `docker-compose.yml`.
 >
 > - Once it's built, use the terminal within VS Code to execute other commands using `./run`.
 >
-> - Ensure that VS Code has selected the correct Python interpreter within your devcontainer `/usr/local/bin/python`.
+> - Ensure that VS Code has selected the correct Python interpreter within your new environment: `/usr/local/bin/python`.
 4. Use `./run app` to execute the main `src/app.py` script at anytime.
 
 
@@ -31,7 +31,7 @@ For Machine Learning, this project uses the best pre-trained Portuguese Text Rec
 
 > **Warning**
 >
-> It is recommended to develop within `devcontainer` as you'll be able to use
+> It is recommended to develop within a `Dev Container` as you'll be able to use
 > the Python interpreter installed within your container, and correct IDE dependency suggestions and links via the pre-installed `pylance` extension.
 >
 > ---
@@ -43,13 +43,13 @@ For Machine Learning, this project uses the best pre-trained Portuguese Text Rec
 - `./run python`: Execute `python` commands
 - `./run pip`: Execute `pip` commands (`./run pip install ...` is disabled, and you should use `./run pip:install ...` instead)
 - `./run pip:install [OPTIONAL_PACKAGE_NAME_OR_USE_REQUIREMENTS_TXT_INSTEAD]`: To install dependecies and write the lock file
-- `./run bash` to enter `bash` within the container when outside of the `devcontainer` environment.
+- `./run bash` to enter `bash` within the container when outside of the `Dev Container` environment.
 
 ## About
 
 The goal of this project is to automate the process of extracting questions and answer options from any Mozambican exam paper.
 
-| Full OCR Sample (using [`tesseract-ocr`](https://github.com/tesseract-ocr/tesseract) and the `best` `Portuguese` trained model) | Current extraction approach sample |
+| Full OCR Sample (using [`tesseract-ocr`](https://github.com/tesseract-ocr/tesseract) and the `best` `Portuguese` pre-trained model) | Current extraction approach sample |
 | --- | --- |
 | ![Text boundaries detected with tesseract-ocr](./docs/text-boundaries-with-tesseract.png) | ![Questions extraction approach sample](./docs/current-goal.jpg)|
 

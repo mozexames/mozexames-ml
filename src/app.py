@@ -1,12 +1,13 @@
 from PIL import Image, ImageDraw
 import pytesseract
-from pdf2image import pdf2image
-import ipdb
 from lib.root import Root
-from models.size import Size
-from models.point import Point
-from models.rect import Rect
 from models.bounds import Bounds
+from lib.question_number_parser import QuestionNumberParser
+from lib.tesseract_image_data_parser import TesseractImageDataParser
+from lib.recognized_words.within_bounds import RecognizedWords
+from models.recognized_word import RecognizedWord
+from pydash import sort_by, find
+import ipdb
 
 print(pytesseract.get_tesseract_version())
 
@@ -17,16 +18,18 @@ def find_top_limit(image_data) -> int:
   index = index_of_any_of_these_in_list(candidates, all_words)
   y = image_data['top'][index]
   height = image_data['height'][index]
-
   return y + height
 
 
-def find_nearest_numbered_list_item_bounds(image_data) -> Bounds:
-  all_words: list[str] = image_data['text']
+# def find_image_data_within_limits(bounds: Bounds, image_data: any):
 
-  index = 1
+#   pass
 
-  pass
+# # def find_nearest_numbered_list_item_bounds(image_data) -> Bounds:
+# #   all_words: list[str] = image_data['text']
+# #   index = 1
+
+# #   pass
 
 def index_of_any_of_these_in_list(candidates: list[str], items: list[str]):
   lowered_items = map(lambda i: i.lower(), items)
@@ -49,6 +52,45 @@ image_path = Root.out('42eb49f3-a609-42c0-af01-8f53a3cb7b33-1.jpg')
 with Image.open(image_path) as image:
   image_data = pytesseract.image_to_data(image, output_type=pytesseract.Output.DICT, lang='por')
 
+  recognized_words: list[RecognizedWord] = TesseractImageDataParser(image_data).parse()
+
+  ipdb.set_trace()
+
+  # Find the closest question number from the left edge of the paper
+  # - Sort the recognized words data by their "left" bound in ASC order first
+  print("I should already init", recognized_words[0].bounds)
+  sorted_recognized_words = sort_by(recognized_words, 'bounds.left')
+  # - Find it
+  question_number_recognized_word: RecognizedWord | None = find(sorted_recognized_words, lambda rw: QuestionNumberParser(rw.text).valid())
+
+  if question_number_recognized_word:
+    drawing = ImageDraw.Draw(image)
+
+    bounds: Bounds = question_number_recognized_word.bounds
+    threshold = 16
+    limit_bounds: Bounds = Bounds(bounds.left - threshold, 0, bounds.right + threshold, image.height)
+
+    drawing.rectangle(limit_bounds.as_tuple(), outline=(255, 0, 0), width=4)
+
+    q2 = find(recognized_words, lambda x: x.text == '2.')
+    q3 = find(recognized_words, lambda x: x.text == '3.')
+    q4 = find(recognized_words, lambda x: x.text == '4.')
+
+    recognized_words_within_bounds = RecognizedWords(recognized_words).within_bounds(limit_bounds)
+    ipdb.set_trace()
+    for recognized_word in recognized_words_within_bounds:
+      drawing.rectangle(recognized_word.bounds.as_tuple(), outline=(0, 255, 0), width=4)
+    else:
+      print('Did not recognize any words within given bounds', bounds)
+
+    output_image_path = Root.out('ml.png')
+    image.save(output_image_path, bitmap_format='png')
+    print('Image saved at:', output_image_path)
+  else:
+    print('Did not find any question number!')
+
+#
+
   # 1. Find the first y limit from top of the page
   # i = find_nearest_numbered_list_item_index(image_data)
   # point = Point(image_data['left'][i], image_data['top'][i])
@@ -60,15 +102,15 @@ with Image.open(image_path) as image:
 
   # image.save(Root.out('ml.png'), bitmap_format='png')
 
-  level_count = len(image_data['level'])
-  drawing = ImageDraw.Draw(image)
+  # level_count = len(image_data['level'])
+  # drawing = ImageDraw.Draw(image)
 
-  for i in range(level_count):
-    (x, y, w, h) = (
-      image_data['left'][i], image_data['top'][i], image_data['width'][i], image_data['height'][i]
-    )
+  # for i in range(level_count):
+  #   (x, y, w, h) = (
+  #     image_data['left'][i], image_data['top'][i], image_data['width'][i], image_data['height'][i]
+  #   )
 
-    drawing.rectangle((x, y, x + w, y + h), outline=(0, 255, 0), width=4)
+  #   drawing.rectangle((x, y, x + w, y + h), outline=(0, 255, 0), width=4)
 
-  # Show the final image
-  image.save(Root.out('ml.png'), bitmap_format='png')
+  # # Show the final image
+  # image.save(Root.out('ml.png'), bitmap_format='png')

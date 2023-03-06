@@ -75,6 +75,37 @@ function app {
   python ./src/app.py
 }
 
+function test {
+  # Run all specs
+  local SPECS_MODULE
+  local SPECS_FILENAME_PATTERN
+  local EXTRA_SPEC_ARGS
+
+  SPECS_MODULE="tests"
+  SPECS_FILENAME_PATTERN="test_*.py"
+
+  if [ $# -eq 1 ]; then
+    # Use the only argument that was provided, as the search
+    echo -e "${ORANGE}* Running tests whose name matches the provided substring '${1}'${ENDCOLOR}"
+    EXTRA_SPEC_ARGS="-k ${@}"
+  elif [ $# -gt 1 ]; then
+    # Run tests with the specified arguments
+    echo -e "${ORANGE}* Running 'unittest' with specified args.${ENDCOLOR}"
+    EXTRA_SPEC_ARGS="${@}"
+  else
+    # Run all specs
+    echo -e "${ORANGE}* Running all tests from '${SPECS_MODULE}' matching '${SPECS_FILENAME_PATTERN}'.${ENDCOLOR}"
+  fi
+
+  # $EXTRA_SPEC_ARGS
+  python -m unittest discover -s $SPECS_MODULE -p $SPECS_FILENAME_PATTERN
+}
+
+function spec {
+  # alias to ./run tests
+  tests
+}
+
 function bash {
   # Run bash
   if _within_dev_container; then

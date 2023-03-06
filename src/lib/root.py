@@ -1,4 +1,3 @@
-import ipdb
 import os
 
 class Root:
@@ -6,9 +5,11 @@ class Root:
   def join(*paths: str) -> str:
     return os.path.join(Root._get_root_path(), *paths)
 
+  @staticmethod
   def assets(*paths: str) -> str:
     return os.path.join(Root._get_root_path(), 'assets/', *paths)
 
+  @staticmethod
   def out(*paths: str) -> str:
     return os.path.join(Root._get_root_path(), 'out/', *paths)
 

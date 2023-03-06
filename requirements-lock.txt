@@ -2,6 +2,8 @@ asttokens==2.2.1
 backcall==0.2.0
 decorator==5.1.1
 executing==1.2.0
+factory-boy==3.2.1
+Faker==17.6.0
 ipdb==0.13.11
 ipython==8.11.0
 jedi==0.18.2
@@ -15,9 +17,10 @@ Pillow==9.4.0
 prompt-toolkit==3.0.38
 ptyprocess==0.7.0
 pure-eval==0.2.2
+pydash==6.0.2
 Pygments==2.14.0
-PyPDF2==3.0.1
 pytesseract==0.3.10
+python-dateutil==2.8.2
 six==1.16.0
 stack-data==0.6.2
 tomli==2.0.1

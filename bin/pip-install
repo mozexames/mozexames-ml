@@ -11,10 +11,9 @@ echo "================================"; echo
 
 # If a dependency is specified, just install that and update the requirements and lock files.
 if [ $# -gt 0 ]; then
+  echo -e "${ORANGE}* Installing the specified dependency: ${1}${ENDCOLOR}"
   pip install --no-warn-script-location --no-cache-dir "${@}"
-  pip freeze > requirements.txt
-  pip freeze > requirements-lock.txt
-  exit 0
+  echo;
 fi
 
 # Install all dependencies from the requirements.txt file

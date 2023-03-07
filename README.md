@@ -24,10 +24,13 @@ For Machine Learning, this project uses the best pre-trained Portuguese Text Rec
 > - Ensure that VS Code has selected the correct Python interpreter within your new environment: `/usr/local/bin/python`.
 4. Use `./run app` to execute the main `src/app.py` script at anytime.
 
-
 > **Note**
 >
-> The `./run app` command essential does `./run python src/app.py`
+> Use `./run test` run tests.
+>
+> > <sub>You can also append `-k [name]` to run tests matching the provided name in isolation</sub>
+>
+> Hint: The `./run app` command essential does `./run python src/app.py`
 
 > **Warning**
 >
@@ -40,9 +43,10 @@ For Machine Learning, this project uses the best pre-trained Portuguese Text Rec
 
 ## Development
 
+- `./run test` to run tests.
 - `./run python`: Execute `python` commands
-- `./run pip`: Execute `pip` commands (`./run pip install ...` is disabled, and you should use `./run pip:install ...` instead)
-- `./run pip:install [OPTIONAL_PACKAGE_NAME_OR_USE_REQUIREMENTS_TXT_INSTEAD]`: To install dependecies and write the lock file
+- `./run pip`: Execute `pip` commands (`./run pip install ...` is disabled, and you should use `./run pip:install` instead)
+  - To add a new dependency, add the name to `requirements.in`, then `./run pip:install` to install and automatically sync `requirements.txt`. Avoid `pip install [name]`. This project uses [`pip-tools`](https://github.com/jazzband/pip-tools) to manage its dependencies.
 - `./run bash` to enter `bash` within the container when outside of the `Dev Container` environment.
 
 ## About

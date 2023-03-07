@@ -29,8 +29,8 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Upgrade pip to its latest version and install Python dependencies using the version of pip installed in the venv
-COPY requirements.txt .
+COPY requirements.in .
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN pip install pip-tools && python -m piptools compile requirements.in && python -m piptools sync requirements.txt
 
 COPY --chown=appuser:appuser . /app

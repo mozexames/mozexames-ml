@@ -43,6 +43,15 @@ function _dc {
   docker compose "${DC}" ${TTY} "${@}"
 }
 
+function _disabled_pip_command_msg {
+  DISABLED_COMMAND="${1}"
+  ALT_COMMAND_NAME="${2}"
+
+  echo -e "* ${RED}\`${DISABLED_COMMAND}\` is disabled on this project.${ENDCOLOR}"
+  echo -e "  Instead, you should modify ${GREEN}\`requirements.in\`${ENDCOLOR} to add / remove your new dependency then use ${GREEN}\`${ALT_COMMAND_NAME}\`${ENDCOLOR} to install."
+  echo "  This will automatically manage your \`requirements.txt\` file for you using pip-tools."
+}
+
 # -----------------------------------------------------------------------------
 
 function build {
@@ -72,38 +81,11 @@ function python {
 
 function app {
   # Run the main app script
-  python ./src/app.py
+  python src/app.py
 }
 
-function test {
-  # Run all specs
-  local SPECS_MODULE
-  local SPECS_FILENAME_PATTERN
-  local EXTRA_SPEC_ARGS
-
-  SPECS_MODULE="tests"
-  SPECS_FILENAME_PATTERN="test_*.py"
-
-  if [ $# -eq 1 ]; then
-    # Use the only argument that was provided, as the search
-    echo -e "${ORANGE}* Running tests whose name matches the provided substring '${1}'${ENDCOLOR}"
-    EXTRA_SPEC_ARGS="-k ${@}"
-  elif [ $# -gt 1 ]; then
-    # Run tests with the specified arguments
-    echo -e "${ORANGE}* Running 'unittest' with specified args.${ENDCOLOR}"
-    EXTRA_SPEC_ARGS="${@}"
-  else
-    # Run all specs
-    echo -e "${ORANGE}* Running all tests from '${SPECS_MODULE}' matching '${SPECS_FILENAME_PATTERN}'.${ENDCOLOR}"
-  fi
-
-  # $EXTRA_SPEC_ARGS
-  python -m unittest discover -s $SPECS_MODULE -p $SPECS_FILENAME_PATTERN
-}
-
-function spec {
-  # alias to ./run tests
-  tests
+function tests {
+  python -m pytest tests "${@}"
 }
 
 function bash {
@@ -120,9 +102,10 @@ function bash {
 function pip {
   # Run pip in the web container
   if [ "$1" == "install" ]; then
-    echo -e "* ${RED}The command \`./run pip install\` is not allowed on its own.${ENDCOLOR}"
-    echo -e "  Use ${GREEN}\`./run pip:install [NAME]\`${ENDCOLOR} instead to install your python dependencies."
-    echo "  This will automatically manage your requirements.txt and requirements-lock.txt file."
+    _disabled_pip_command_msg "./run pip install ..." "./run pip:install"
+    return 1
+  elif [ "$1" == "uninstall" ]; then
+    _disabled_pip_command_msg "./run pip uninstall ..." "./run pip:uninstall"
     return 1
   fi
 
@@ -131,7 +114,12 @@ function pip {
 
 function pip:install {
   # Install Python dependencies and write the requirements.txt file
-  cmd bin/pip-install "${@}"
+  cmd pip-compile --resolver=backtracking && pip-sync
+}
+
+function pip:uninstall {
+  # Uninstall Python dependencies and write the requirements.txt file
+  cmd pip uninstall "${@}" && pip-sync
 }
 
 function help {

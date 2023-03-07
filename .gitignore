@@ -5,7 +5,7 @@
 /output/*
 !/output/.keep
 
-# Editor files
+# Ignore IntelliJ editors - This project only supports running on VS Code + Dev Containers.
 .idea
 
 # macOS extraneous files
@@ -20,6 +20,7 @@
 /pkg/
 /spec/reports/
 /spec/examples.txt
+.pytest_*
 /test/tmp/
 /test/version_tmp/
 /tmp/

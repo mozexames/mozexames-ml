@@ -3,7 +3,7 @@ from .point import Point
 from .size import Size
 from .bounds import Bounds
 
-@dataclass()
+@dataclass
 class RecognizedWord:
   point: Point
   size: Size

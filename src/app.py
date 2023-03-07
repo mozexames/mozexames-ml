@@ -4,7 +4,7 @@ from lib.root import Root
 from models.bounds import Bounds
 from lib.question_number_parser import QuestionNumberParser
 from lib.tesseract_image_data_parser import TesseractImageDataParser
-from lib.recognized_words.within_bounds import RecognizedWords
+from lib.recognized_words_within_bounds import RecognizedWordsWithinBounds
 from models.recognized_word import RecognizedWord
 from pydash import sort_by, find
 import ipdb
@@ -54,11 +54,8 @@ with Image.open(image_path) as image:
 
   recognized_words: list[RecognizedWord] = TesseractImageDataParser(image_data).parse()
 
-  ipdb.set_trace()
-
   # Find the closest question number from the left edge of the paper
   # - Sort the recognized words data by their "left" bound in ASC order first
-  print("I should already init", recognized_words[0].bounds)
   sorted_recognized_words = sort_by(recognized_words, 'bounds.left')
   # - Find it
   question_number_recognized_word: RecognizedWord | None = find(sorted_recognized_words, lambda rw: QuestionNumberParser(rw.text).valid())
@@ -76,7 +73,7 @@ with Image.open(image_path) as image:
     q3 = find(recognized_words, lambda x: x.text == '3.')
     q4 = find(recognized_words, lambda x: x.text == '4.')
 
-    recognized_words_within_bounds = RecognizedWords(recognized_words).within_bounds(limit_bounds)
+    recognized_words_within_bounds = RecognizedWordsWithinBounds(recognized_words, limit_bounds).get()
     ipdb.set_trace()
     for recognized_word in recognized_words_within_bounds:
       drawing.rectangle(recognized_word.bounds.as_tuple(), outline=(0, 255, 0), width=4)

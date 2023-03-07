@@ -1,13 +1,16 @@
 {
-  "python.analysis.typeCheckingMode": "basic",
   "editor.indentSize": "tabSize",
   "editor.insertSpaces": true,
   "editor.tabSize": 2,
-
+  "breadcrumbs.enabled": true,
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.importFormat": "relative",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.autoImportUserSymbols": true,
   "[python]": {
     "diffEditor.ignoreTrimWhitespace": false,
     "editor.wordBasedSuggestions": false,
     "editor.indentSize": "tabSize",
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
   }
 }

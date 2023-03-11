@@ -83,6 +83,11 @@ function _add_dependencies_to_requirements_in {
   done
 }
 
+function _sync_pip_dependencies {
+  cmd pip-sync # Sync dependencies from 'requirements.in'
+  cmd pip-compile -q --resolver=backtracking # Write 'requirements.txt'
+}
+
 # -----------------------------------------------------------------------------
 
 function build {
@@ -119,9 +124,10 @@ function python {
     esac
   done
 
-  shift $((OPTIND-1))
 
   if [ "$WATCH_FOR_CHANGES" == true ]; then
+    shift $((OPTIND-1))
+
     echo -e "${GREEN}Hot Reload is enabled.${ENDCOLOR}"
     echo -e "${GREEN}+ Using 'jurigged' with args: ${@}${ENDCOLOR}"
     cmd python3 -m jurigged "${@}"
@@ -154,7 +160,7 @@ function listen {
 
 function app {
   # Run the main app script
-  python "${@}" src/gui.py
+  python "${@}" src/app.py
 }
 
 function tests {
@@ -199,8 +205,7 @@ function pip:install {
     return 1
   fi
 
-  # Sync dependencies from 'requirements.in'
-  cmd pip-sync
+  _sync_pip_dependencies
 
   echo -e "${GREEN}Your dependencies are in-sync 🎉.${ENDCOLOR}"
 }
@@ -211,8 +216,7 @@ function pip:uninstall {
   # Update requirements.in to remove the provided dependencies
   _remove_dependencies_to_requirements_in "${@}"
 
-  cmd pip-sync # Sync dependencies from 'requirements.in'
-  cmd pip-compile -q --resolver=backtracking # Write 'requirements.txt'
+  _sync_pip_dependencies
 
   echo -e "${GREEN}Your dependencies are in-sync 🎉.${ENDCOLOR}"
 }

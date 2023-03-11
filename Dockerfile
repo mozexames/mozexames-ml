@@ -1,5 +1,5 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3.8
+FROM python:3.10
 LABEL maintainer="Kishan Jadav <kishan_jadav@hotmail.com>"
 
 WORKDIR /app
@@ -32,7 +32,7 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.in .
 RUN pip install --upgrade pip
 RUN pip install pip-tools && \
-    python -m piptools sync && \
-    python -m piptools compile --resolver=backtracking
+    python -m piptools compile requirements.in --resolver=backtracking && \
+    python -m piptools sync requirements.txt --pip-args="--no-cache-dir --no-deps"
 
 COPY --chown=appuser:appuser . /app

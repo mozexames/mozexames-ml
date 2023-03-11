@@ -7,6 +7,7 @@
   "python.analysis.importFormat": "relative",
   "python.analysis.autoImportCompletions": true,
   "python.analysis.autoImportUserSymbols": true,
+  "python.defaultInterpreterPath": "python3.10",
   "[python]": {
     "diffEditor.ignoreTrimWhitespace": false,
     "editor.wordBasedSuggestions": false,

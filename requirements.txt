@@ -22,9 +22,13 @@ exceptiongroup==1.1.0
     # via pytest
 executing==1.2.0
     # via stack-data
+factory-boy==3.2.1
+    # via -r requirements.in
+faker==17.6.0
+    # via factory-boy
 iniconfig==2.0.0
     # via pytest
-ipdb==0.13.11
+ipdb==0.13.13
     # via -r requirements.in
 ipython==8.11.0
     # via ipdb
@@ -68,10 +72,13 @@ pytesseract==0.3.10
     # via -r requirements.in
 pytest==7.2.2
     # via -r requirements.in
+python-dateutil==2.8.2
+    # via faker
 six==1.16.0
     # via
     #   asttokens
     #   blessed
+    #   python-dateutil
 stack-data==0.6.2
     # via ipython
 tomli==2.0.1

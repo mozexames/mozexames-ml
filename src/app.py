@@ -1,56 +1,26 @@
-# from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw
+from pdf2image import pdf2image
 import pytesseract
-# from lib.root import Root
-# from models.bounds import Bounds
-# from lib.question_number_parser import QuestionNumberParser
-# from lib.tesseract_image_data_parser import TesseractImageDataParser
-# from lib.recognized_words_within_bounds import RecognizedWordsWithinBounds
-# from models.recognized_word import RecognizedWord
-# from pydash import sort_by, find
-# import ipdb
+from lib.root import Root
+from models.bounds import Bounds
+from lib.question_number_parser import QuestionNumberParser
+from lib.tesseract_image_data_parser import TesseractImageDataParser
+from lib.recognized_words_within_bounds import RecognizedWordsWithinBounds
+from models.recognized_word import RecognizedWord
+from pydash import sort_by, find
+import ipdb
 
 print(pytesseract.get_tesseract_version())
 
-# def find_top_limit(image_data) -> int:
-#   all_words: list[str] = image_data['text']
-#   candidates = ['margem', 'enunciado', 'responda']
+# Convert PDF to Image
+# pdf_file_path = Root.assets('2005-1a Epoca.pdf')
+# paths = pdf2image.convert_from_path(pdf_file_path, output_folder=Root.out(), fmt='JPEG', paths_only=True, dpi=300)
 
-#   index = index_of_any_of_these_in_list(candidates, all_words)
-#   y = image_data['top'][index]
-#   height = image_data['height'][index]
-#   return y + height
+image_path = Root.out('e74986d5-43c4-4c72-9ec5-542c5e60c388-1.jpg')
 
-
-# # def find_image_data_within_limits(bounds: Bounds, image_data: any):
-
-# #   pass
-
-# # # def find_nearest_numbered_list_item_bounds(image_data) -> Bounds:
-# # #   all_words: list[str] = image_data['text']
-# # #   index = 1
-
-# # #   pass
-
-# def index_of_any_of_these_in_list(candidates: list[str], items: list[str]):
-#   lowered_items = map(lambda i: i.lower(), items)
-#   index = -1
-#   for candidate in candidates:
-#     try:
-#       index = list(lowered_items).index(candidate)
-#       break
-#     except ValueError:
-#       # TODO: do something
-#       index = -1
-#   return index
-
-# # Convert PDF to Image
-# # pdf_file_path = Root.assets('exams', '2005-1a Epoca.pdf')
-# # paths = pdf2image.convert_from_path(pdf_file_path, output_folder=Root.out(), fmt='JPEG', paths_only=True, dpi=300)
-
-# image_path = Root.out('42eb49f3-a609-42c0-af01-8f53a3cb7b33-1.jpg')
-
-# with Image.open(image_path) as image:
-#   image_data = pytesseract.image_to_data(image, output_type=pytesseract.Output.DICT, lang='eng+por')
+with Image.open(image_path) as image:
+  image_data = pytesseract.image_to_data(image, output_type=pytesseract.Output.DICT, lang='eng+por')
+  print(image_data)
 
 #   recognized_words: list[RecognizedWord] = TesseractImageDataParser(image_data).parse()
 

@@ -57,9 +57,7 @@ For Machine Learning, this project uses the best pre-trained Portuguese Text Rec
 
 #### Linux
 
-> **Note**
->
-> Linux might just work without needing to configure X11 further, but I haven't tried it yet. I'll try and update this docs after I test it out on my Linux machine.
+On Linux, X11 should just work requiring further configurations.
 
 ### Other commands
 

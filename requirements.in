@@ -1,5 +1,6 @@
-ipdb==0.13.11
+ipdb==0.13.13
 pytesseract==0.3.10
+factory_boy==3.2.1
 pydash==6.0.2
 pytest==7.2.2
 pdf2image==1.16.3

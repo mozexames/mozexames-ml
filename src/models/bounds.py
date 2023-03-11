@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional, Tuple
 
 @dataclass
 class Bounds:
@@ -17,17 +18,18 @@ class Bounds:
        |
        |
     10 +       +---------------+
-       |       |  A            |
+       |       | A             |
        |       |               |
     20 +       |       +-------+-------+
-       |       |       |  B    |       |
+       |       |       | B     |       |
        |       |       |       |       |
     30 +       +-------+-------+       |
        |               |               |
        |               |               |
     40 +               +---------------+
        |
-       |       On this example, Bounds B is not completely within Bounds A, so this method returns False on both bounds.
+       |       On this example, Bounds B is not completely within Bounds A, so this method returns False
+       |       on both bounds.
 
 
        0       10      20      30      40
@@ -35,13 +37,13 @@ class Bounds:
        |
        |
     10 +       +---------------+
-       |       |  A            |
+       |       | A             |
        |       |               |
     20 +       |               |
        |       |               |
        |       |               |
     30 +       |  +---------+  |
-       |       |  |  B      |  |
+       |       |  | B       |  |
        |       |  |         |  |
     40 +       |  +---------+  |
        |       |               |
@@ -61,7 +63,7 @@ class Bounds:
 
     return within_left and within_top and within_right and within_bottom
 
-  def as_tuple(self) -> tuple[int, int, int, int]:
+  def as_tuple(self) -> Tuple[int, int, int, int]:
     """
     Returns the bounds as tuple ordered as `(left, top, right, bottom)`.
     """
@@ -81,7 +83,7 @@ class Bounds:
 
 @dataclass
 class PartialBounds(Bounds):
-  left: int | None = None
-  top: int | None = None
-  right: int | None = None
-  bottom: int | None = None
+  left: Optional[int] = None
+  top: Optional[int] = None
+  right: Optional[int] = None
+  bottom: Optional[int] = None

@@ -42,12 +42,16 @@ packaging==23.0
     #   pytest
 parso==0.8.3
     # via jedi
+pdf2image==1.16.3
+    # via -r requirements.in
 pexpect==4.8.0
     # via ipython
 pickleshare==0.7.5
     # via ipython
 pillow==9.4.0
-    # via pytesseract
+    # via
+    #   pdf2image
+    #   pytesseract
 pluggy==1.0.0
     # via pytest
 prompt-toolkit==3.0.38

@@ -1,5 +1,5 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3.10
+FROM python:3.8
 LABEL maintainer="Kishan Jadav <kishan_jadav@hotmail.com>"
 
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Update and Install system dependencies as root
 RUN apt-get update -qq
-RUN apt-get install -y tesseract-ocr libtesseract-dev wget curl poppler-utils
+RUN apt-get install -y tesseract-ocr libtesseract-dev wget curl poppler-utils cmake x11-apps
 
 # Find the "tessdata" folder, and download the portuguese language data file to it.
 # The data folder found should be located at: /usr/share/tesseract-ocr/4.00/tessdata
@@ -31,6 +31,8 @@ ENV PYTHONUNBUFFERED=1
 # Upgrade pip to its latest version and install Python dependencies using the version of pip installed in the venv
 COPY requirements.in .
 RUN pip install --upgrade pip
-RUN pip install pip-tools && python -m piptools compile requirements.in && python -m piptools sync requirements.txt
+RUN pip install pip-tools && \
+    python -m piptools sync && \
+    python -m piptools compile --resolver=backtracking
 
 COPY --chown=appuser:appuser . /app

@@ -16,7 +16,7 @@ For Machine Learning, this project uses the best pre-trained Portuguese Text Rec
 
 1. Clone the project, `cp .env.example .env` then open it on your `VS Code`.
 2. Install the `ms-vscode-remote.remote-containers` VS Code extension (if not already).
-3. Open the Command Pallete <kbd>CMD / CTRL</kbd> + <kbd>P</kbd> then search and run `Dev Container: Reopen in Container`.
+3. Open the Command Pallete <kbd>CMD / CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>P</kbd> then search and run `Dev Containers: Reopen in Container`.
 > This will start building the `Dev Container` using `docker-compose.yml`.
 >
 > - Once it's built, use the terminal within VS Code to execute other commands using `./run`.
@@ -43,10 +43,31 @@ For Machine Learning, this project uses the best pre-trained Portuguese Text Rec
 
 ## Development
 
+### Running the GUI
+
+#### macOS
+
+1. Download [XQuartz](https://www.xquartz.org/), then install and reboot your machine.
+2. Open <kbd>XQuartz.app</kbd> > <kbd>Settings</kbd> (from the menu bar) > Security > And tick both <kbd>"Authenticate connections"</kbd> & <kbd>"Allow connections from other network clients"</kbd>.
+    1. Run `xhost + localhost`
+    2. Keep XQuartz open (at least whenever you're developing this codebase)
+2. Install [socat](http://www.dest-unreach.org/socat/) via [`brew install socat`](https://formulae.brew.sh/formula/socat)
+3. Run `socat TCP-LISTEN:6000,reuseaddr,fork UNIX-CLIENT:/tmp/.X11-unix/X0` on a separate terminal, and let it listen.
+4. Any GUI interface from this codebase should now work.
+
+#### Linux
+
+> **Note**
+>
+> Linux might just work without needing to configure X11 further, but I haven't tried it yet. I'll try and update this docs after I test it out on my Linux machine.
+
+### Other commands
+
 - `./run test` to run tests.
-- `./run python`: Execute `python` commands
-- `./run pip`: Execute `pip` commands (`./run pip install ...` is disabled, and you should use `./run pip:install` instead)
-  - To add a new dependency, add the name to `requirements.in`, then `./run pip:install` to install and automatically sync `requirements.txt`. Avoid `pip install [name]`. This project uses [`pip-tools`](https://github.com/jazzband/pip-tools) to manage its dependencies.
+- `./run python`: Execute `python` commands. You can append `-w` to watch the file for changes (hot module reload). It uses [`breuleux/jurigged`](https://github.com/breuleux/jurigged) under the hood.
+- `./run pip`: Execute `pip` commands (`./run pip install ...` and `./run pip uninstall ...` are disabled. You should use the managed `./run pip:install ...` and `./run pip:uninstall ...` instead.
+  - To add a new dependency, either manually add them to `requirements.in`, then `./run pip:install` or pass the dependencies as its arguments if you don't want to manually modify `requirements.in`. The same applies to `./run pip:uninstall`.
+  - This project uses [`pip-tools`](https://github.com/jazzband/pip-tools) to manage its dependencies.
 - `./run bash` to enter `bash` within the container when outside of the `Dev Container` environment.
 
 ## About

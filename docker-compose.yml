@@ -3,8 +3,20 @@ services:
   web:
     image: mozexames-ml
     tty: true
+    environment:
+      - DISPLAY=host.docker.internal:0
+      - XAUTHORITY=/tmp/xauth
     build:
       context: .
       dockerfile: ./Dockerfile
     volumes:
       - .:/app
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+      - ~/.Xauthority:/tmp/xauth
+    networks:
+      - mozexames_ml
+
+networks:
+  mozexames_ml:
+    name: mozexames_ml
+    driver: host

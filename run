@@ -48,8 +48,39 @@ function _disabled_pip_command_msg {
   ALT_COMMAND_NAME="${2}"
 
   echo -e "* ${RED}\`${DISABLED_COMMAND}\` is disabled on this project.${ENDCOLOR}"
-  echo -e "  Instead, you should modify ${GREEN}\`requirements.in\`${ENDCOLOR} to add / remove your new dependency then use ${GREEN}\`${ALT_COMMAND_NAME}\`${ENDCOLOR} to install."
-  echo "  This will automatically manage your \`requirements.txt\` file for you using pip-tools."
+  echo -e "  Please use ${GREEN}\`${ALT_COMMAND_NAME}\`${ENDCOLOR} instead."
+  echo "  The new command will automatically manage \`requirements.in\` and \`requirements.txt\` files for you via pip-tools."
+}
+
+function _remove_dependencies_to_requirements_in {
+  local ADDED_DEPS_COUNT
+  ADDED_DEPS_COUNT=0
+
+  for pkg in "$@"; do
+    if grep -qxF "${pkg}" requirements.in; then
+      sed --in-place "/${pkg}=\{0,2\}.*/d" ./requirements.in
+      echo -e "${ORANGE}* Removed '${pkg}' from './requirements.in'.${ENDCOLOR}"
+
+      ADDED_DEPS_COUNT=$((ADDED_DEPS_COUNT+1))
+    else
+      echo -e "${RED}• Did not find '${pkg}' in './requirements.in'.${ENDCOLOR}"
+    fi
+  done
+
+  if [ $ADDED_DEPS_COUNT -gt 0 ]; then
+    echo -e "${ORANGE}Caution: Please ensure that 'requirements.in' has been correctly modified for you.${ENDCOLOR}"
+  fi
+}
+
+function _add_dependencies_to_requirements_in {
+  for pkg in "$@"; do
+    if ! grep -qxF "${pkg}" requirements.in; then
+      echo "${pkg}" >> requirements.in
+      echo -e "${GREEN}* Added '${pkg}' to './requirements.in'.${ENDCOLOR}"
+    else
+      echo -e "${ORANGE}• Did not add '${pkg}' to './requirements.in'. Dependency already existed.${ENDCOLOR}"
+    fi
+  done
 }
 
 # -----------------------------------------------------------------------------
@@ -68,7 +99,7 @@ function cmd {
   # Run any command you want in the web container
   if _within_dev_container; then
     # Execute the commands directly, as we're already within the web container
-    exec "${@}"
+    eval "${@}"
   else
     _dc web "${@}"
   fi
@@ -76,12 +107,54 @@ function cmd {
 
 function python {
   # Run python in the web container
-  cmd python "${@}"
+  local WATCH_FOR_CHANGES
+
+  while getopts ':w' OPTS; do
+    case "$OPTS" in
+      w)
+        WATCH_FOR_CHANGES=true
+        ;;
+      *)
+        WATCH_FOR_CHANGES=false
+    esac
+  done
+
+  shift $((OPTIND-1))
+
+  if [ "$WATCH_FOR_CHANGES" == true ]; then
+    echo -e "${GREEN}Hot Reload is enabled.${ENDCOLOR}"
+    echo -e "${GREEN}+ Using 'jurigged' with args: ${@}${ENDCOLOR}"
+    cmd python3 -m jurigged "${@}"
+  else
+    cmd python3 "${@}"
+  fi
+}
+
+function listen {
+  # TODO: tidy
+
+  # Open XQuartz on Mac
+  if [[ "$OSTYPE" =~ ^darwin ]]; then
+    echo -e "${ORANGE}You're on macOS${ENDCOLOR}"
+    echo -e "${ORANGE}- Opening XQuartz (make sure you've allowed localhost via \`xhost + localhost\`. See README):${ENDCOLOR}"
+    open -a XQuartz.app --args :0 -listen tcp
+
+    echo -e "${ORANGE}- Forwarding for X11 events from \`/tmp/.X11-unix/X0\` using socat:${ENDCOLOR}"
+
+    socat TCP-LISTEN:6000,reuseaddr,fork UNIX-CLIENT:/tmp/.X11-unix/X0
+
+    # >&2
+
+    # echo -e "${ORANGE}- Reverting \`localhost\` from X11 allow list:${ENDCOLOR}"
+    # xhost - localhost
+  else
+    echo -e "${ORANGE}You need to run this command from your host macOS machine.${ENDCOLOR}"
+  fi
 }
 
 function app {
   # Run the main app script
-  python src/app.py
+  python "${@}" src/gui.py
 }
 
 function tests {
@@ -92,7 +165,7 @@ function bash {
   # Run bash
   if _within_dev_container; then
     echo -e $UNSUPPORTED_WITHIN_DEV_CONTAINER
-    echo "* Hint: Instead, use the VS Code terminal that is connected to the dev container execute bash / zsh commands directly."
+    echo "* Hint: Just run the commands on this terminal that you're currently using :)"
     return 1
   fi
 
@@ -109,17 +182,39 @@ function pip {
     return 1
   fi
 
-  cmd pip "${@}"
+  python -m pip "${@}"
 }
 
 function pip:install {
-  # Install Python dependencies and write the requirements.txt file
-  cmd pip-compile --resolver=backtracking && pip-sync
+  # Install Python dependencies from 'requirements.in' and write the 'requirements.txt' file
+
+  # Update requirements.in to add the provided dependencies
+  _add_dependencies_to_requirements_in "${@}"
+
+   # Write 'requirements.txt' and catch any exceptions
+  if ! cmd pip-compile -q --resolver=backtracking; then
+    # If it failed to write, perhaps because it could not satisfy any of the provided dependencies
+    # revert all lines we've previously added to requirements.in.
+    _remove_dependencies_to_requirements_in "${@}"
+    return 1
+  fi
+
+  # Sync dependencies from 'requirements.in'
+  cmd pip-sync
+
+  echo -e "${GREEN}Your dependencies are in-sync 🎉.${ENDCOLOR}"
 }
 
 function pip:uninstall {
-  # Uninstall Python dependencies and write the requirements.txt file
-  cmd pip uninstall "${@}" && pip-sync
+  # Remove unwanted deps from reuirements.in, write requirements.txt and sync.
+
+  # Update requirements.in to remove the provided dependencies
+  _remove_dependencies_to_requirements_in "${@}"
+
+  cmd pip-sync # Sync dependencies from 'requirements.in'
+  cmd pip-compile -q --resolver=backtracking # Write 'requirements.txt'
+
+  echo -e "${GREEN}Your dependencies are in-sync 🎉.${ENDCOLOR}"
 }
 
 function help {

@@ -4,4 +4,6 @@ factory_boy==3.2.1
 pydash==6.0.2
 pytest==7.2.2
 pdf2image==1.16.3
-jurigged==0.5.5
+opencv-python==4.7.0.72
+Flask
+python-dotenv

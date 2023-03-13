@@ -111,29 +111,8 @@ function cmd {
 }
 
 function python {
-  # Run python in the web container
-  local WATCH_FOR_CHANGES
-
-  while getopts ':w' OPTS; do
-    case "$OPTS" in
-      w)
-        WATCH_FOR_CHANGES=true
-        ;;
-      *)
-        WATCH_FOR_CHANGES=false
-    esac
-  done
-
-
-  if [ "$WATCH_FOR_CHANGES" == true ]; then
-    shift $((OPTIND-1))
-
-    echo -e "${GREEN}Hot Reload is enabled.${ENDCOLOR}"
-    echo -e "${GREEN}+ Using 'jurigged' with args: ${@}${ENDCOLOR}"
-    cmd python3 -m jurigged "${@}"
-  else
-    cmd python3 "${@}"
-  fi
+  # Run python from the web container
+  cmd python3 "${@}"
 }
 
 function listen {
@@ -160,7 +139,13 @@ function listen {
 
 function app {
   # Run the main app script
-  python "${@}" src/app.py
+  python -m flask run --debug
+}
+
+function gui {
+  # Run the main app script
+  ##### Experimental #####
+  python "${@}" src/gui.py
 }
 
 function tests {

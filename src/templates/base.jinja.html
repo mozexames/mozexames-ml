@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" />
+    <title>{% block title %}{% endblock %} - Exames ML Tools</title>
+    <script src="{{ url_for('static', filename='tailwind-3.2.6.js') }}"></script>
+    {% endblock %}
+  </head>
+  <body>
+    <div id="container p-4">{% block content %}{% endblock %}</div>
+  </body>
+</html>

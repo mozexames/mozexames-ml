@@ -43,7 +43,9 @@
 			"extensions": [
 				"ms-python.python",
 				"twixes.pypi-assistant",
-				"shiro.pythonpack"
+				"shiro.pythonpack",
+				"samuelcolvin.jinjahtml",
+				"bradlc.vscode-tailwindcss"
 			]
 		}
 	}

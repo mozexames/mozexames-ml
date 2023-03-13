@@ -1,7 +1,7 @@
 {
   "editor.indentSize": "tabSize",
-  "editor.insertSpaces": true,
   "editor.tabSize": 2,
+  "editor.insertSpaces": true,
   "breadcrumbs.enabled": true,
   "python.analysis.typeCheckingMode": "basic",
   "python.analysis.importFormat": "relative",
@@ -13,5 +13,12 @@
     "editor.wordBasedSuggestions": false,
     "editor.indentSize": "tabSize",
     "editor.tabSize": 2,
-  }
+  },
+  "[jinja-html][html]": {
+    "editor.tabSize": 2,
+    "editor.indentSize": "tabSize",
+    "emmet.triggerExpansionOnTab": true,
+    "emmet.showAbbreviationSuggestions": true,
+  },
+  "emmet.includeLanguages": { "jinja-html": "html" }
 }

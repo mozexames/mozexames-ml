@@ -1,5 +1,4 @@
-# For more information, please refer to https://aka.ms/vscode-docker-python
-FROM python:3.10
+FROM python:3.10-bullseye
 LABEL maintainer="Kishan Jadav <kishan_jadav@hotmail.com>"
 
 WORKDIR /app
@@ -7,10 +6,15 @@ WORKDIR /app
 ################################
 
 # Update and Install system dependencies as root
-RUN apt-get update -qq
-RUN apt-get install -y tesseract-ocr libtesseract-dev wget curl poppler-utils cmake x11-apps
+RUN apt-get update && \
+    apt-get install -y apt-transport-https lsb-release && \
+    echo "deb https://notesalexp.org/tesseract-ocr5/$(lsb_release -cs)/ $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/notesalexp.list > /dev/null && \
+    apt-get update -oAcquire::AllowInsecureRepositories=true && apt-get install -y --allow-unauthenticated notesalexp-keyring -oAcquire::AllowInsecureRepositories=true && \
+    apt-get update && \
+    apt-get install -y tesseract-ocr libtesseract-dev wget curl poppler-utils cmake ffmpeg libsm6 libxext6 && \
+    apt-get clean all
 
-# Find the "tessdata" folder, and download the portuguese language data file to it.
+# Find the "tessdata" folder, and download the portuguese language data file.
 # The data folder found should be located at: /usr/share/tesseract-ocr/4.00/tessdata
 ENV TESSERACT_LANG_FILENAME="por.traineddata"
 ENV TESSERACT_LANG_URL="https://github.com/tesseract-ocr/tessdata_best/raw/main/${TESSERACT_LANG_FILENAME}"

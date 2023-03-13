@@ -8,6 +8,8 @@ class QuestionNumberParser:
     'd': 0,
     'i': 1,
     'l': 1,
+    'z': 2,
+    'a': 4,
     's': 5,
     'b': 8,
   }

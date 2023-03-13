@@ -1,0 +1,40 @@
+{% extends "base.jinja.html" %}
+
+{% block title %}
+  Home
+{% endblock %}
+
+{% block content %}
+  <div class="p-4">
+    <h1 class="text-4xl font-bold">Exames Moçambique</h1>
+    <h3 class="text-2xl">Opened: <span class="font-bold text-blue-500 underline underline-offset-8">{{ pdf_name }}</span></h3>
+  </div>
+
+  <div class="p-4">
+    <form method="POST" enctype="multipart/form-data">
+      <input name="input_file" type="file" class="block w-full text-sm text-slate-500
+        file:mr-4 file:py-2 file:px-4
+        file:border-0
+        file:text-sm file:font-semibold
+        file:bg-gray-600 file:text-white
+        hover:file:bg-gray-700
+      " />
+
+      <button class="mt-4 py-2 px-4 bg-blue-500 text-white font-semibold shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
+        Process
+      </button>
+    </form>
+  </div>
+
+  <div class="grid grid-cols-4 gap-2">
+    <div class="p-2 border rounded-lg border-orange-500">
+      <h4 class="mb-2 font-bold">Input:</h4>
+      <img src="{{ url_for('static', filename='images/sample.jpg') }}">
+    </div>
+
+    <div class="p-2 border rounded-lg border-orange-500">
+      <h4 class="mb-2 font-bold">Output:</h4>
+      <img src="{{ url_for('static', filename='images/out/ml.png') }}">
+    </div>
+  </div>
+{% endblock %}

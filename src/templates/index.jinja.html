@@ -1,0 +1,34 @@
+{% extends "base.jinja.html" %}
+
+{% block title %}
+  Home
+{% endblock %}
+
+{% block content %}
+  <div>
+    <h1 class="text-4xl font-bold">Exames Moçambique</h1>
+    <h3 class="text-2xl">Machine Learning Tools</h3>
+  </div>
+
+  <div class="mt-5">
+    <div class="flex gap-3 flex-wrap">
+      {% for filename in pdf_filenames %}
+      <div class="p-4 bg-yellow-50 font-bold hover:bg-yellow-100 drop-shadow-md text-black rounded-md cursor-pointer">
+        <i class="mb-3 fa-solid fa-file-pdf fa-md"></i>
+
+        <p>{{ filename }}</p>
+
+        <a class="bg-yellow-300 text-black hover:bg-black hover:text-white px-3 w-full py-2 mt-3 rounded-lg block flex justify-between items-center"
+           href="{{ url_for('show', pdf_name=filename) }}">
+          Select
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+
+  {# <div class="p-4">
+  </div> #}
+{% endblock %}
